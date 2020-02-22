@@ -45,56 +45,53 @@ def newCatalog():
     catalog['directors'] = map.newMap (4001, maptype='PROBING') #2000 directors-smallfile
     #catalog['moviesMap'] = map.newMap (164531, maptype='CHAINING')#329044 movies-bigfile
     #catalog['directors'] = map.newMap (171863, maptype='PROBING') #85929 directors-bigfile
+    
     return catalog
 
 
-def newBook (row):
-    """
-    Crea una nueva estructura para almacenar los actores de una pelicula 
-    """
-    book = {"book_id": row['book_id'], "title":row['title'], "average_rating":row['average_rating'], "ratings_count":row['ratings_count']}
-    return book
+def newMovie(row):
 
-def addBookList (catalog, row):
-    """
-    Adiciona libro a la lista
-    """
-    books = catalog['booksList']
-    book = newBook(row)
-    lt.addLast(books, book)
+    movie = {"id": row['id'], "genres": row['genres'], "title": row['title'], "vote_average": row['vote_average'], "vote_count": row['vote_count']}
+    return movie
 
-def addBookMap (catalog, row):
+def addMovieList (catalog, row):
     """
-    Adiciona libro al map con key=title
+    Adiciona la pelicula a una lista
     """
-    books = catalog['booksMap']
-    book = newBook(row)
-    map.put(books, book['title'], book, compareByKey)
+    movies = catalog['moviesList']
+    movie = newMovie(row)
+    lt.addLast (movies, movie)
 
-def newAuthor (name, row):
+def addMovieMap(catalog, row):
     """
-    Crea una nueva estructura para modelar un autor y sus libros
+    Adicion la pelicula al map con key=id
     """
-    author = {'name':"", "authorBooks":None,  "sum_average_rating":0}
-    author ['name'] = name
-    author['sum_average_rating'] = float(row['average_rating'])
-    author ['authorBooks'] = lt.newList('SINGLE_LINKED')
-    lt.addLast(author['authorBooks'],row['book_id'])
-    return author
+    movies = catalog['moviesMap']
+    movie = newMovie(row)
+    map.put(movies, movie['id'], movie, compareByKey)
 
-def addAuthor (catalog, name, row):
+def newDirector (row):
+    """
+    Crea una nueva estructura para modelar un director y sus películas
+    """
+    director = {'name':"", "directorMovies":None}
+    director ['name'] = row['director_name']
+    director ['directorMovies'] = lt.newList('SINGLE_LINKED')
+    lt.addLast(director['directorMovies'],row['id'])
+    return director
+
+def addDirector (catalog, row):
     """
     Adiciona un autor al map y sus libros
     """
-    if name:
-        authors = catalog['authors']
-        author=map.get(authors,name,compareByKey)
-        if author:
-            lt.addLast(author['authorBooks'],row['book_id'])
-            author['sum_average_rating'] += float(row['average_rating'])
-        else:
-            author = newAuthor(name, row)
-            map.put(authors, author['name'], author, compareByKey)
+    #if name:
+    directors = catalog['directors']
+    director=map.get(directors, row['director_name'], compareByKey)
+    if director:
+        lt.addLast(director['directorMovies'],row['id'])
+    else:
+        director = newDirector(row)
+        map.put(directors, director['name'], director, compareByKey)
 
 
 # Funciones de consulta
@@ -110,23 +107,25 @@ def getBookInList (catalog, bookTitle):
     return None
 
 
-def getBookInMap (catalog, bookTitle):
+def getDirectorInMap (catalog, name):
     """
-    Retorna el libro desde el mapa a partir del titulo (key)
+    Retorna el director  desde el mapa de directores a partir del nombre (key)
     """
-    return map.get(catalog['booksMap'], bookTitle, compareByKey)
+    return map.get(catalog['directors'], name, compareByKey)
+
+def getMovieInMap (catalog, id):
+    """
+    Retorna la pelicula desde el mapa de peliculas a partir del id
+    """
+    return map.get(catalog['moviesMap'], id, compareByKey)
 
 
-def getAuthorInfo (catalog, authorName):
-    """
-    Retorna el autor a partir del nombre
-    """
-    return map.get(catalog['authors'], authorName, compareByKey)
 
 # Funciones de comparacion
 
 def compareByKey (key, element):
     return  (key == element['key'] )  
 
-def compareByTitle(bookTitle, element):
-    return  (bookTitle == element['title'] )
+def compareByName(name, element):
+    return (name == element['name'])
+

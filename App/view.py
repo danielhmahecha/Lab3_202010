@@ -39,8 +39,8 @@ operación solicitada
 def printMenu():
     print("Bienvenido al Laboratorio 3")
     print("1- Cargar información")
-    print("2- Buscar libro por titulo")
-    print("3- Buscar información de autor por nombre ...")
+    print("2- Buscar buenas películas por director")
+    print("3- Requerimiento 2 ...")
     print("4- Requerimiento 3 ...")
     print("0- Salir")
 
@@ -59,6 +59,19 @@ def loadData (catalog):
     controller.loadData(catalog)
 
 
+def printBestMoviesDirector (movies, criteria):
+    size = lt.size(movies)
+
+    if size:
+        print ('El director tiene  '+str(size)+' películas con puntaje promedio igual o mayor a  '+str(criteria)+": ")
+        iterator = it.newIterator(movies)
+        while  it.hasNext(iterator):
+            movie = it.next(iterator)
+            print ('Titulo: ' + movie['title'] +  ' Rating: ' + movie['vote_average'] + ' (' + movie['vote_count'] + ' votos)')
+    else:
+        print ('No se encontraron peliculas')
+    print ('\n')
+
 """
 Menu principal
 """
@@ -69,17 +82,21 @@ while True:
         print("Cargando información de los archivos ....")
         catalog = initCatalog ()
         loadData (catalog)
-        print ('Mapa Libros cargados: ' + str(map.size(catalog['booksMap'])))
-        print ('Lista Libros cargados: ' + str(lt.size(catalog['booksList'])))
-        print ('Autores cargados: ' + str(map.size(catalog['authors'])))
+        print ('Mapa Peliculas cargadas: ' + str(map.size(catalog['moviesMap'])))
+        print ('Lista Peliculas cargadas: ' + str(lt.size(catalog['moviesList'])))
+        print ('Directores cargados: ' + str(map.size(catalog['directors']))+"\n")
         
     elif int(inputs[0])==2:
-        bookTitle = input("Nombre del libro a buscar: ")
-        book = controller.getBookInfo (catalog, bookTitle)
-        if book:
-            print("Libro encontrado:",book['title'],",Rating:",book['average_rating'])
+        name = input("Nombre del director a buscar: ")
+        director = controller.getDirectorInfo (catalog, name)
+        if director:
+            print("Director  encontrado:",director['name'])
+            movies = controller.getMoviesByDirector(catalog, director['name'], 6)
+            printBestMoviesDirector (movies, 6)
         else:
-            print("Libro No encontrado")    
+            print("Director No encontrado") 
+
+           
 
     elif int(inputs[0])==3:
         authorName = input("Nombre del autor a buscar: ")

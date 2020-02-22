@@ -52,57 +52,44 @@ def compareratings (movie1, movie2):
 
 # Funciones para la carga de datos 
 
-def loadBooks (catalog, sep=','):
+def loadMovies (catalog, sep=';'):
     """
-    Carga los libros del archivo.  Por cada libro se toman sus autores y por 
-    cada uno de ellos, se crea en la lista de autores, a dicho autor y una
-    referencia al libro que se esta procesando.
+    Carga las películas del archivo. 
     """
     t1_start = process_time() #tiempo inicial
-    booksfile = cf.data_dir + 'GoodReads/books.csv'
+    moviesfile = cf.data_dir + 'themoviesdb/SmallMoviesDetailsCleaned.csv'
+    #moviesfile = cf.data_dir + 'themoviesdb/AllMoviesDetailsCleaned.csv'
     dialect = csv.excel()
     dialect.delimiter=sep
-    with open(booksfile, encoding="utf-8") as csvfile:
+    with open(moviesfile, encoding="utf-8-sig") as csvfile:
         spamreader = csv.DictReader(csvfile, dialect=dialect)
         for row in spamreader: 
-            # Se adiciona el libro a la lista de libros
-            model.addBookList(catalog, row)
-            # Se adiciona el libro al mapa de libros (key=title)
-            model.addBookMap(catalog, row)
-            # Se obtienen los autores del libro
-            authors = row['authors'].split(",")
-            # Cada autor, se crea en la lista de autores del catalogo, y se 
-            # adiciona un libro en la lista de dicho autor (apuntador al libro)
-            for author in authors:
-                model.addAuthor (catalog, author.strip(), row)
+            # Se adiciona la pelicula a la lista de peliculas
+            model.addMovieList(catalog, row)
+            # Se adiciona la pelicula al mapa de peliculas (key=title)
+            model.addMovieMap(catalog, row)
     t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución carga libros:",t1_stop-t1_start," segundos")   
+    print("Tiempo de ejecución carga películas:",t1_stop-t1_start," segundos")   
 
-def loadDirectors (catalog, sep=','):
+def loadDirectors (catalog, sep=';'):
     """
     Carga los libros del archivo.  Por cada libro se toman sus autores y por 
     cada uno de ellos, se crea en la lista de autores, a dicho autor y una
     referencia al libro que se esta procesando.
     """
     t1_start = process_time() #tiempo inicial
-    booksfile = cf.data_dir + 'themoviesdb/MoviesCastingRaw-small.csv'
+    castingfile = cf.data_dir + 'themoviesdb/MoviesCastingRaw-small.csv'
+    #castingfile = cf.data_dir + 'themoviesdb/AllMoviesCastingRaw.csv'
     dialect = csv.excel()
     dialect.delimiter=sep
-    with open(booksfile, encoding="utf-8") as csvfile:
+    with open(castingfile, encoding="utf-8-sig") as csvfile:
         spamreader = csv.DictReader(csvfile, dialect=dialect)
         for row in spamreader: 
-            # Se adiciona el libro a la lista de libros
-            model.addBookList(catalog, row)
-            # Se adiciona el libro al mapa de libros (key=title)
-            model.addBookMap(catalog, row)
-            # Se obtienen los autores del libro
-            authors = row['authors'].split(",")
-            # Cada autor, se crea en la lista de autores del catalogo, y se 
-            # adiciona un libro en la lista de dicho autor (apuntador al libro)
-            for author in authors:
-                model.addAuthor (catalog, author.strip(), row)
+            # Se adiciona el director al mapa  de directores
+            model.addDirector(catalog, row)
+          
     t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución carga libros:",t1_stop-t1_start," segundos")   
+    print("Tiempo de ejecución carga directores:",t1_stop-t1_start," segundos")   
 
 
 def initCatalog ():
@@ -119,20 +106,52 @@ def loadData (catalog):
     Carga los datos de los archivos y cargar los datos en la
     estructura de datos
     """
-    loadBooks(catalog)
+    loadMovies(catalog)
+    loadDirectors(catalog)
     
 
 # Funciones llamadas desde la vista y enviadas al modelo
 
+def getDirectorInfo (catalog, name):
+    t1_start = process_time() 
+    director = model.getDirectorInMap(catalog, name)
+    t1_stop = process_time()
+   # print("\nTiempo de ejecución buscar Director:",t1_stop-t1_start," segundos\n")   
+    if director:
+        return director
+    else:
+        return None   
 
-def getBookInfo(catalog, bookTitle):
+def getMoviesByDirector(catalog, name, minavg):
+    t1_start = process_time() 
+    director = getDirectorInfo (catalog, name)
+    ids = director['directorMovies']
+    movies = lt.newList('ARRAY_LIST')
+    iterator = it.newIterator(ids)
+    while  it.hasNext(iterator):
+        id = it.next(iterator)
+        movie = getMovieInfo (catalog, id)
+        if float(movie['vote_average']) >= minavg:
+            lt.addLast(movies,movie)
+            
+    # for id in ids:
+    #     movie = getMovieInfo (catalog, id)
+    #     if movie['vote_average'] >= minavg:
+    #         lt.addLast(movies,movie)
+    
+    t1_stop = process_time()
+    print("\nTiempo de ejecución buscar buenas peliculas por Director:",t1_stop-t1_start," segundos\n")
+
+    return movies
+
+def getMovieInfo(catalog, id):
     t1_start = process_time() #tiempo inicial
     #book=model.getBookInList(catalog, bookTitle)
-    book=model.getBookInMap(catalog, bookTitle)
+    movie=model.getMovieInMap(catalog, id)
     t1_stop = process_time() #tiempo final
-    print("Tiempo de ejecución buscar libro:",t1_stop-t1_start," segundos")   
-    if book:
-        return book
+    #print("Tiempo de ejecución buscar pelicula:",t1_stop-t1_start," segundos")   
+    if movie:
+        return movie
     else:
         return None   
 

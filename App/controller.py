@@ -57,8 +57,8 @@ def loadMovies (catalog, sep=';'):
     Carga las películas del archivo. 
     """
     t1_start = process_time() #tiempo inicial
-    moviesfile = cf.data_dir + 'themoviesdb/SmallMoviesDetailsCleaned.csv'
-    #moviesfile = cf.data_dir + 'themoviesdb/AllMoviesDetailsCleaned.csv'
+    #moviesfile = cf.data_dir + 'themoviesdb/SmallMoviesDetailsCleaned.csv'
+    moviesfile = cf.data_dir + 'themoviesdb/AllMoviesDetailsCleaned.csv'
     dialect = csv.excel()
     dialect.delimiter=sep
     with open(moviesfile, encoding="utf-8-sig") as csvfile:
@@ -78,8 +78,8 @@ def loadDirectors (catalog, sep=';'):
     referencia al libro que se esta procesando.
     """
     t1_start = process_time() #tiempo inicial
-    castingfile = cf.data_dir + 'themoviesdb/MoviesCastingRaw-small.csv'
-    #castingfile = cf.data_dir + 'themoviesdb/AllMoviesCastingRaw.csv'
+    #castingfile = cf.data_dir + 'themoviesdb/MoviesCastingRaw-small.csv'
+    castingfile = cf.data_dir + 'themoviesdb/AllMoviesCastingRaw.csv'
     dialect = csv.excel()
     dialect.delimiter=sep
     with open(castingfile, encoding="utf-8-sig") as csvfile:
@@ -123,7 +123,7 @@ def getDirectorInfo (catalog, name):
         return None   
 
 def getMoviesByDirector(catalog, name, minavg):
-    t1_start = process_time() 
+    t1_start = process_time() #tiempo inicial 
     director = getDirectorInfo (catalog, name)
     ids = director['directorMovies']
     movies = lt.newList('ARRAY_LIST')
@@ -139,7 +139,7 @@ def getMoviesByDirector(catalog, name, minavg):
     #     if movie['vote_average'] >= minavg:
     #         lt.addLast(movies,movie)
     
-    t1_stop = process_time()
+    t1_stop = process_time() #tiempo final
     print("\nTiempo de ejecución buscar buenas peliculas por Director:",t1_stop-t1_start," segundos\n")
 
     return movies

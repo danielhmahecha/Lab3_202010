@@ -41,10 +41,10 @@ def newCatalog():
    
     catalog = {'moviesList':None, 'directors':None, 'moviesMap': None}
     catalog['moviesList'] = lt.newList("ARRAY_LIST")
-    catalog['moviesMap'] = map.newMap (1009, maptype='CHAINING')#2000 movies-smallfile
-    catalog['directors'] = map.newMap (4001, maptype='PROBING') #2000 directors-smallfile
-    #catalog['moviesMap'] = map.newMap (164531, maptype='CHAINING')#329044 movies-bigfile
-    #catalog['directors'] = map.newMap (171863, maptype='PROBING') #85929 directors-bigfile
+    #catalog['moviesMap'] = map.newMap (1009, maptype='CHAINING')#2000 movies-smallfile
+    #catalog['directors'] = map.newMap (4001, maptype='PROBING') #2000 directors-smallfile
+    catalog['moviesMap'] = map.newMap (164531, maptype='CHAINING')#329044 movies-bigfile
+    catalog['directors'] = map.newMap (171863, maptype='PROBING') #85929 directors-bigfile
     
     return catalog
 

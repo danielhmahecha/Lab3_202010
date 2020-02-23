@@ -40,8 +40,6 @@ def printMenu():
     print("Bienvenido al Laboratorio 3")
     print("1- Cargar información")
     print("2- Buscar buenas películas por director")
-    print("3- Requerimiento 2 ...")
-    print("4- Requerimiento 3 ...")
     print("0- Salir")
 
 
@@ -95,22 +93,6 @@ while True:
             printBestMoviesDirector (movies, 6)
         else:
             print("Director No encontrado") 
-
-           
-
-    elif int(inputs[0])==3:
-        authorName = input("Nombre del autor a buscar: ")
-        author = controller.getAuthorInfo (catalog, authorName)
-        if author:
-            print("Libros del autor",authorName,":",lt.size(author['authorBooks']))
-            print("Promedio de Votación: ",authorName,(author['sum_average_rating']/lt.size(author['authorBooks'])))
-        else:
-            print("Autor No encontrado")    
-
-
-    elif int(inputs[0])==4:
-        label = input (" ")
-        pass
     else:
         sys.exit(0)
 sys.exit(0)
